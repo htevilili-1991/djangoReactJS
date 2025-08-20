@@ -15,8 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from myapp.views import index
 
 urlpatterns = [
+    path('', index, name='index'),  # Root URL points to the React app
     path('admin/', admin.site.urls),
+    path('api/', include('myapp.urls')),  # Keep the API URL
 ]
