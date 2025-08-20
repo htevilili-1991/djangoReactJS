@@ -44,7 +44,7 @@ This repository provides a robust and reusable template for building web applica
 
 ## Screenshots
 ReactJS Successfully integracted with Django
-<img width="1920" height="1200" alt="image" src="https://github.com/user-attachments/assets/ea2d1543-9a2b-49ce-9ef0-1ffea9600c50" />
+<img width="1920" height="1200" alt="Screenshot From 2025-08-20 11-19-30" src="https://github.com/user-attachments/assets/6ddc3728-f34e-4d9a-a9fd-8ee061c35e38" />
 
 
 ## Usage
