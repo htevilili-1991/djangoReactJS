@@ -1,4 +1,4 @@
-# Django-React-WebApp-Template
+# Django + React JS
 
 This repository provides a robust and reusable template for building web applications by integrating **ReactJS** (frontend) with **Django** (backend). Designed for scalability and modularity, this template is ideal for developers looking to kickstart web app projects with a modern, full-stack architecture. It combines Django’s powerful backend capabilities with React’s dynamic, component-based UI, enabling rapid development across various web app projects.
 
