@@ -38,6 +38,7 @@ This repository provides a robust and reusable template for building web applica
    cd backend
    pip install -r requirements.txt
    python manage.py migrate
+   python manage.py create_admin   # creates admin user (username: admin, password: admin)
    python manage.py runserver
    ```
 4. **Set Up React Frontend**:
