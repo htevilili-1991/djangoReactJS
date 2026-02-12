@@ -1,84 +1,104 @@
-# Django + React JS
+# Django + React
 
-This repository provides a robust and reusable template for building web applications by integrating **ReactJS** (frontend) with **Django** (backend). Designed for scalability and modularity, this template is ideal for developers looking to kickstart web app projects with a modern, full-stack architecture. It combines Django’s powerful backend capabilities with React’s dynamic, component-based UI, enabling rapid development across various web app projects.
+A ready-to-use full-stack template for Django + ReactJS projects. Includes authentication, profile management, and a modern admin dashboard UI.
 
 ## Features
-- **Django Backend**: Leverages Django REST Framework for creating secure, scalable APIs.
-- **React Frontend**: Utilizes ReactJS with Tailwind CSS for a responsive, modern UI.
-- **Seamless Integration**: Pre-configured setup for communication between Django and React via REST APIs.
-- **Modular Structure**: Organized codebase to support multiple projects with minimal reconfiguration.
-- **CORS Support**: Configured to handle cross-origin requests for development and production.
-- **Static File Handling**: Efficient management of React’s build files within Django’s static file system.
-- **Customizable**: Easily adaptable for various use cases, from dashboards to e-commerce platforms.
+
+- **Django REST Backend**: Token auth, profile API, avatar upload, CORS configured
+- **React Frontend**: Vite + TypeScript + Tailwind CSS (TailAdmin UI)
+- **Authentication**: Protected routes, admin-only sign-in (`/signin`)
+- **Profile**: Edit personal info, address, social links, and profile picture
+- **Database**: SQLite by default; PostgreSQL optional
 
 ## Getting Started
 
 ### Prerequisites
+
 - Python 3.x
-- Node.js and npm
-- PostgreSQL
-- Django (`pip install -r backend/requirements.txt`)
-- React dependencies (`npm install`)
+- Node.js 18+
+- (Optional) PostgreSQL
 
 ### Installation
-1. **Clone the Repository**:
+
+1. **Clone and create virtual environment**
    ```bash
-   git clone https://github.com/yourusername/Django-React-WebApp-Template.git
-   cd Django-React-WebApp-Template
-   ```
-2. **Set Up PostgreSQL** (optional; SQLite is used by default):
-   ```bash
-   sudo -u postgres psql -f backend/setup_db.sql
-   export DB_ENGINE=postgresql
+   git clone <your-repo-url>
+   cd djangoReactJS
+   python -m venv venv
+   source venv/bin/activate   # Windows: venv\Scripts\activate
    ```
 
-3. **Set Up Django Backend**:
+2. **Backend setup**
    ```bash
-   source venv/bin/activate   # or create one: python -m venv venv
    cd backend
    pip install -r requirements.txt
    python manage.py migrate
-   python manage.py create_admin   # creates admin user (username: admin, password: admin)
+   python manage.py create_admin   # Creates admin / admin
    python manage.py runserver
    ```
-4. **Set Up React Frontend**:
+
+3. **Frontend setup** (in a new terminal)
    ```bash
-   cd ../frontend
+   cd frontend
    npm install
    npm run dev
    ```
-5. **Access the App**:
-   - Backend API: `http://localhost:8000/api/`
-   - Frontend: `http://localhost:5173` (Vite default port)
 
-## Screenshots
-ReactJS Successfully integracted with Django
-<img width="1920" height="1200" alt="Screenshot From 2025-08-20 11-19-30" src="https://github.com/user-attachments/assets/6ddc3728-f34e-4d9a-a9fd-8ee061c35e38" />
+4. **Access**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000/api/
+   - Sign in at `/signin` with `admin` / `admin`
 
+### PostgreSQL (optional)
 
-## Usage
-- **API Development**: Extend the Django app (`backend/myapp/`) to add models, serializers, and viewsets for your project’s data.
-- **Frontend Customization**: Modify React components in `frontend/src/components/` to match your UI requirements.
-- **Static Files**: Build the React app (`npm run build`) and serve it through Django for production deployment.
+SQLite is used by default. For PostgreSQL:
+
+```bash
+sudo -u postgres psql -f backend/setup_db.sql
+export DB_ENGINE=postgresql
+cd backend && python manage.py migrate && python manage.py create_admin
+```
+
+## API Overview
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/auth/login/` | POST | Login (username, password) |
+| `/api/auth/me/` | GET | Current user + avatar_url |
+| `/api/auth/logout/` | POST | Logout |
+| `/api/profile/` | GET, PATCH | Get/update profile |
+| `/api/profile/avatar/` | POST | Upload profile picture |
+| `/api/items/` | GET, POST, etc. | Dashboard items (example) |
 
 ## Project Structure
+
 ```
 djangoReactJS/
-├── backend/                 # Django backend
-│   ├── djangoReact/        # Django project settings and URLs
-│   ├── myapp/              # Django app with models, views, serializers
-│   ├── manage.py           # Django management script
-│   ├── setup_db.sql        # PostgreSQL database & user setup script
-│   └── staticfiles/        # Static files (React build output from collectstatic)
-├── frontend/                # React frontend
-│   ├── src/                # React components, services, and assets
-│   ├── public/             # Public assets and index.html
+├── backend/                 # Django
+│   ├── djangoReact/        # Settings, URLs
+│   ├── myapp/              # App: auth, profile, models
+│   ├── manage.py
+│   ├── setup_db.sql        # PostgreSQL setup
+│   └── requirements.txt
+├── frontend/               # React (Vite + TailAdmin)
+│   ├── src/
+│   │   ├── api/            # API client
+│   │   ├── context/        # AuthContext, etc.
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── layout/
 │   └── package.json
-└── README.md               # Project documentation
+└── README.md
 ```
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request for improvements or bug fixes.
+## Production Build
+
+```bash
+cd frontend && npm run build
+cd ../backend && python manage.py collectstatic --noinput
+# Serve with gunicorn, uwsgi, or your preferred WSGI server
+```
 
 ## License
+
 MIT License
