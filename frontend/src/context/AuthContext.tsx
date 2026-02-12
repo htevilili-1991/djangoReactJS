@@ -14,6 +14,7 @@ export interface User {
   email: string;
   is_staff: boolean;
   is_superuser: boolean;
+  avatar_url?: string | null;
 }
 
 interface AuthContextType {
@@ -21,6 +22,7 @@ interface AuthContextType {
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -72,11 +74,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const userData = await apiGetCurrentUser();
+      setUser(userData);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const value: AuthContextType = {
     user,
     loading,
     login,
     logout,
+    refreshUser,
     isAuthenticated: !!user,
   };
 

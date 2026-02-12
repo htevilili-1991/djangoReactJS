@@ -37,6 +37,7 @@ def login(request):
             status=status.HTTP_401_UNAUTHORIZED
         )
     token, _ = Token.objects.get_or_create(user=user)
+    avatar_url = _get_avatar_url(user, request)
     return Response({
         'token': token.key,
         'user': {
@@ -45,8 +46,20 @@ def login(request):
             'email': user.email,
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser,
+            'avatar_url': avatar_url,
         }
     })
+
+
+def _get_avatar_url(user, request):
+    """Get avatar URL from user's profile if it exists."""
+    try:
+        profile = user.profile
+        if profile.avatar:
+            return request.build_absolute_uri(profile.avatar.url)
+    except Exception:  # UserProfile.DoesNotExist or no avatar
+        pass
+    return None
 
 
 @api_view(['GET'])
@@ -54,6 +67,7 @@ def login(request):
 def current_user(request):
     """Get current authenticated user."""
     user = request.user
+    avatar_url = _get_avatar_url(user, request)
     return Response({
         'user': {
             'id': user.id,
@@ -61,6 +75,7 @@ def current_user(request):
             'email': user.email,
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser,
+            'avatar_url': avatar_url,
         }
     })
 

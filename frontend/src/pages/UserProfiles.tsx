@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
+import { useAuth } from "../context/AuthContext";
 import UserMetaCard from "../components/UserProfile/UserMetaCard";
 import UserInfoCard from "../components/UserProfile/UserInfoCard";
 import UserAddressCard from "../components/UserProfile/UserAddressCard";
@@ -15,6 +16,7 @@ export default function UserProfiles() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { refreshUser } = useAuth();
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -41,6 +43,7 @@ export default function UserProfiles() {
   const handleAvatarUpload = async (file: File) => {
     const updated = await apiUploadAvatar(file);
     setProfile(updated);
+    await refreshUser(); // Update header avatar
   };
 
   if (loading) {
