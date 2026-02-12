@@ -16,7 +16,8 @@ This repository provides a robust and reusable template for building web applica
 ### Prerequisites
 - Python 3.x
 - Node.js and npm
-- Django (`pip install django djangorestframework django-cors-headers`)
+- PostgreSQL
+- Django (`pip install -r backend/requirements.txt`)
 - React dependencies (`npm install`)
 
 ### Installation
@@ -25,22 +26,29 @@ This repository provides a robust and reusable template for building web applica
    git clone https://github.com/yourusername/Django-React-WebApp-Template.git
    cd Django-React-WebApp-Template
    ```
-2. **Set Up Django Backend**:
+2. **Set Up PostgreSQL Database** (one-time setup):
    ```bash
+   sudo -u postgres psql -f backend/setup_db.sql
+   ```
+   Or if you have the postgres password: `psql -U postgres -h localhost -f backend/setup_db.sql`
+
+3. **Set Up Django Backend**:
+   ```bash
+   source venv/bin/activate   # or create one: python -m venv venv
    cd backend
    pip install -r requirements.txt
    python manage.py migrate
    python manage.py runserver
    ```
-3. **Set Up React Frontend**:
+4. **Set Up React Frontend**:
    ```bash
    cd ../frontend
    npm install
-   npm start
+   npm run dev
    ```
-4. **Access the App**:
+5. **Access the App**:
    - Backend API: `http://localhost:8000/api/`
-   - Frontend: `http://localhost:3000`
+   - Frontend: `http://localhost:5173` (Vite default port)
 
 ## Screenshots
 ReactJS Successfully integracted with Django
@@ -54,15 +62,17 @@ ReactJS Successfully integracted with Django
 
 ## Project Structure
 ```
-Django-React-WebApp-Template/
+djangoReactJS/
 ├── backend/                 # Django backend
+│   ├── djangoReact/        # Django project settings and URLs
 │   ├── myapp/              # Django app with models, views, serializers
-│   ├── myproject/          # Django project settings and URLs
-│   └── static/             # Static files (React build output)
+│   ├── manage.py           # Django management script
+│   ├── setup_db.sql        # PostgreSQL database & user setup script
+│   └── staticfiles/        # Static files (React build output from collectstatic)
 ├── frontend/                # React frontend
 │   ├── src/                # React components, services, and assets
 │   ├── public/             # Public assets and index.html
-│   └── tailwind.config.js  # Tailwind CSS configuration
+│   └── package.json
 └── README.md               # Project documentation
 ```
 

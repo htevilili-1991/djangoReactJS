@@ -1,0 +1,12 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+*.sqlite3
+
+# Django
+staticfiles/
+backend/staticfiles/
+*.log
