@@ -164,3 +164,7 @@ STATICFILES_DIRS = [str(_frontend_dist)] if _frontend_dist.exists() else []
 # This is where collectstatic will copy all static files (required for production)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Create this folder automatically on collectstatic
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Media files (user uploads - avatars, etc.)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -74,3 +74,56 @@ def logout(request):
     except Exception:
         pass
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Profile API
+from .models import UserProfile
+from .serializers import UserProfileSerializer
+
+
+def get_or_create_profile(user):
+    """Get or create UserProfile for user."""
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    return profile
+
+
+@api_view(['GET', 'PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def profile_view(request):
+    """Get or update current user's profile."""
+    profile = get_or_create_profile(request.user)
+    if request.method == 'GET':
+        serializer = UserProfileSerializer(profile, context={'request': request})
+        return Response(serializer.data)
+    elif request.method in ('PUT', 'PATCH'):
+        serializer = UserProfileSerializer(
+            profile, data=request.data, partial=(request.method == 'PATCH'),
+            context={'request': request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def profile_avatar_upload(request):
+    """Upload profile avatar."""
+    profile = get_or_create_profile(request.user)
+    avatar_file = request.FILES.get('avatar')
+    if not avatar_file:
+        return Response({'error': 'No avatar file provided'}, status=status.HTTP_400_BAD_REQUEST)
+    # Validate image
+    if avatar_file.size > 5 * 1024 * 1024:  # 5MB max
+        return Response({'error': 'File too large (max 5MB)'}, status=status.HTTP_400_BAD_REQUEST)
+    allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    if avatar_file.content_type not in allowed_types:
+        return Response({'error': 'Invalid file type'}, status=status.HTTP_400_BAD_REQUEST)
+    # Delete old avatar if exists
+    if profile.avatar:
+        profile.avatar.delete(save=False)
+    profile.avatar = avatar_file
+    profile.save()
+    serializer = UserProfileSerializer(profile, context={'request': request})
+    return Response(serializer.data)

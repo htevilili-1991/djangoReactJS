@@ -1,16 +1,62 @@
+import { useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import type { Profile } from "../../api/client";
 
-export default function UserInfoCard() {
+interface UserInfoCardProps {
+  profile: Profile;
+  onUpdate: (data: Partial<Profile>) => Promise<void>;
+}
+
+export default function UserInfoCard({ profile, onUpdate }: UserInfoCardProps) {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({
+    first_name: profile.first_name || "",
+    last_name: profile.last_name || "",
+    email: profile.email || "",
+    phone: profile.phone || "",
+    bio: profile.bio || "",
+    facebook_url: profile.facebook_url || "",
+    x_url: profile.x_url || "",
+    linkedin_url: profile.linkedin_url || "",
+    instagram_url: profile.instagram_url || "",
+  });
+
+  const handleOpen = () => {
+    setForm({
+      first_name: profile.first_name || "",
+      last_name: profile.last_name || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
+      bio: profile.bio || "",
+      facebook_url: profile.facebook_url || "",
+      x_url: profile.x_url || "",
+      linkedin_url: profile.linkedin_url || "",
+      instagram_url: profile.instagram_url || "",
+    });
+    setError("");
+    openModal();
   };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSaving(true);
+    try {
+      await onUpdate(form);
+      closeModal();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -25,50 +71,46 @@ export default function UserInfoCard() {
                 First Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {profile.first_name || "—"}
               </p>
             </div>
-
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Last Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
+                {profile.last_name || "—"}
               </p>
             </div>
-
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {profile.email || "—"}
               </p>
             </div>
-
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Phone
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                {profile.phone || "—"}
               </p>
             </div>
-
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Bio
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
+                {profile.bio || "—"}
               </p>
             </div>
           </div>
         </div>
 
         <button
-          onClick={openModal}
+          onClick={handleOpen}
           className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
         >
           <svg
@@ -100,38 +142,62 @@ export default function UserInfoCard() {
               Update your details to keep your profile up-to-date.
             </p>
           </div>
-          <form className="flex flex-col">
+          <form onSubmit={handleSave} className="flex flex-col">
+            {error && (
+              <div className="px-2 mb-4 text-sm text-red-500">{error}</div>
+            )}
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div>
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Social Links
                 </h5>
-
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div>
                     <Label>Facebook</Label>
                     <Input
                       type="text"
-                      value="https://www.facebook.com/PimjoHQ"
+                      value={form.facebook_url}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, facebook_url: e.target.value }))
+                      }
+                      placeholder="https://facebook.com/..."
                     />
                   </div>
-
                   <div>
                     <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" />
-                  </div>
-
-                  <div>
-                    <Label>Linkedin</Label>
                     <Input
                       type="text"
-                      value="https://www.linkedin.com/company/pimjo"
+                      value={form.x_url}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, x_url: e.target.value }))
+                      }
+                      placeholder="https://x.com/..."
                     />
                   </div>
-
+                  <div>
+                    <Label>LinkedIn</Label>
+                    <Input
+                      type="text"
+                      value={form.linkedin_url}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, linkedin_url: e.target.value }))
+                      }
+                      placeholder="https://linkedin.com/..."
+                    />
+                  </div>
                   <div>
                     <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" />
+                    <Input
+                      type="text"
+                      value={form.instagram_url}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          instagram_url: e.target.value,
+                        }))
+                      }
+                      placeholder="https://instagram.com/..."
+                    />
                   </div>
                 </div>
               </div>
@@ -139,41 +205,72 @@ export default function UserInfoCard() {
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Personal Information
                 </h5>
-
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
                     <Label>First Name</Label>
-                    <Input type="text" value="Musharof" />
+                    <Input
+                      type="text"
+                      value={form.first_name}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, first_name: e.target.value }))
+                      }
+                    />
                   </div>
-
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Last Name</Label>
-                    <Input type="text" value="Chowdhury" />
+                    <Input
+                      type="text"
+                      value={form.last_name}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, last_name: e.target.value }))
+                      }
+                    />
                   </div>
-
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Email Address</Label>
-                    <Input type="text" value="randomuser@pimjo.com" />
+                    <Input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, email: e.target.value }))
+                      }
+                    />
                   </div>
-
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Phone</Label>
-                    <Input type="text" value="+09 363 398 46" />
+                    <Input
+                      type="text"
+                      value={form.phone}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, phone: e.target.value }))
+                      }
+                    />
                   </div>
-
                   <div className="col-span-2">
                     <Label>Bio</Label>
-                    <Input type="text" value="Team Manager" />
+                    <Input
+                      type="text"
+                      value={form.bio}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, bio: e.target.value }))
+                      }
+                      placeholder="e.g. Team Manager"
+                    />
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
+              <Button
+                size="sm"
+                variant="outline"
+                type="button"
+                onClick={closeModal}
+              >
                 Close
               </Button>
-              <Button size="sm" onClick={handleSave}>
-                Save Changes
+              <Button size="sm" type="submit" disabled={saving}>
+                {saving ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </form>
