@@ -91,21 +91,28 @@ WSGI_APPLICATION = 'djangoReact.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-# Use env vars in production: DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
+# Set DB_ENGINE=postgresql to use PostgreSQL; defaults to SQLite for dev
+DB_ENGINE = os.environ.get('DB_ENGINE', 'sqlite')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'djangoreactjs'),
-        'USER': os.environ.get('DB_USER', 'djangoreactjs'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'djangoreactjs_secret'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
-        'OPTIONS': {
-            'connect_timeout': 10,
-        },
+if DB_ENGINE == 'postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'djangoreactjs'),
+            'USER': os.environ.get('DB_USER', 'djangoreactjs'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'djangoreactjs_secret'),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+            'OPTIONS': {'connect_timeout': 10},
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -150,10 +157,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_URL = '/static/'
 
 # This is where Django looks for additional static files during development (e.g., your React dist folder)
-# Frontend is sibling to backend at project root
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR.parent, 'frontend', 'dist'),  # Point to frontend/dist
-]
+# Only add if frontend/dist exists to avoid W004 warning
+_frontend_dist = BASE_DIR.parent / 'frontend' / 'dist'
+STATICFILES_DIRS = [str(_frontend_dist)] if _frontend_dist.exists() else []
 
 # This is where collectstatic will copy all static files (required for production)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Create this folder automatically on collectstatic

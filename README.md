@@ -26,11 +26,11 @@ This repository provides a robust and reusable template for building web applica
    git clone https://github.com/yourusername/Django-React-WebApp-Template.git
    cd Django-React-WebApp-Template
    ```
-2. **Set Up PostgreSQL Database** (one-time setup):
+2. **Set Up PostgreSQL** (optional; SQLite is used by default):
    ```bash
    sudo -u postgres psql -f backend/setup_db.sql
+   export DB_ENGINE=postgresql
    ```
-   Or if you have the postgres password: `psql -U postgres -h localhost -f backend/setup_db.sql`
 
 3. **Set Up Django Backend**:
    ```bash
